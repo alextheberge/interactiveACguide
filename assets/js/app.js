@@ -142,75 +142,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const diagnosisContent = document.getElementById('diagnosis-content');
 
-    const ctx = document.getElementById('pressure-chart').getContext('2d');
-    let pressureChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Low Side', 'High Side'],
-            datasets: [
-                {
-                    label: 'Your Reading',
-                    data: [0, 0],
-                    backgroundColor: 'rgba(59, 130, 246, 0.7)', // Tailwind blue-500
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Normal Min',
-                    data: [0, 0],
-                    backgroundColor: 'rgba(22, 163, 74, 0.2)', // Tailwind green-600 (lighter)
-                    borderColor: 'rgba(22, 163, 74, 0.5)',
-                    borderWidth: 1,
-                    barPercentage: 1.0,
-                    categoryPercentage: 0.8,
-                },
-                {
-                    label: 'Normal Max',
-                    data: [0, 0],
-                    backgroundColor: 'rgba(22, 163, 74, 0.4)', // Tailwind green-600 (light)
-                    borderColor: 'rgba(22, 163, 74, 1)',
-                    borderWidth: 1,
-                    barPercentage: 1.0,
-                    categoryPercentage: 0.8,
-                }
-            ]
+    // Create gauge elements
+    const pressureChartContainer = document.getElementById('pressure-chart').parentNode;
+    pressureChartContainer.innerHTML = `
+        <div class="flex flex-col md:flex-row justify-center items-center gap-8">
+            <div class="gauge-container">
+                <canvas id="low-side-gauge" width="200" height="200"></canvas>
+                <div class="text-center mt-2 font-medium text-blue-700">Low Side (PSI)</div>
+            </div>
+            <div class="gauge-container">
+                <canvas id="high-side-gauge" width="200" height="200"></canvas>
+                <div class="text-center mt-2 font-medium text-red-700">High Side (PSI)</div>
+            </div>
+        </div>
+    `;
+
+    // Initialize gauges
+    const lowSideGauge = new Gauge(document.getElementById('low-side-gauge'));
+    lowSideGauge.maxValue = 100; // Max value for low side
+    lowSideGauge.setMinValue(0);  // Set min value
+    lowSideGauge.animationSpeed = 32; // Set animation speed (lower is faster)
+    lowSideGauge.set(0); // Initialize with 0
+
+    // Configure low side gauge
+    lowSideGauge.setOptions({
+        angle: 0, // The span of the gauge arc
+        lineWidth: 0.44, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Pressure (PSI)' },
-                    ticks: { color: '#475569' }, // Tailwind slate-600
-                    grid: { color: '#e2e8f0' } // Tailwind slate-200
-                },
-                x: {
-                    ticks: { color: '#475569' }, // Tailwind slate-600
-                    grid: { display: false }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { color: '#475569' } // Tailwind slate-600
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += context.parsed.y + ' PSI';
-                            }
-                            return label;
-                        }
-                    }
-                }
-            }
-        }
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#6FADCF',   // Colors
+        colorStop: '#3B82F6',    // Tailwind blue-500
+        strokeColor: '#E0E0E0',  // Background color
+        generateGradient: true,
+        highDpiSupport: true,    // High resolution support
+        staticLabels: {
+            font: "10px sans-serif",  // Specifies font
+            labels: [0, 20, 40, 60, 80, 100],  // Print labels at these values
+            color: "#000000",  // Optional: Label text color
+            fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+        },
+    });
+
+    // Initialize high side gauge
+    const highSideGauge = new Gauge(document.getElementById('high-side-gauge'));
+    highSideGauge.maxValue = 450; // Max value for high side
+    highSideGauge.setMinValue(0);  // Set min value
+    highSideGauge.animationSpeed = 32; // Set animation speed
+    highSideGauge.set(0); // Initialize with 0
+
+    // Configure high side gauge
+    highSideGauge.setOptions({
+        angle: 0, // The span of the gauge arc
+        lineWidth: 0.44, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#FF9999',   // Colors
+        colorStop: '#EF4444',    // Tailwind red-500
+        strokeColor: '#E0E0E0',  // Background color
+        generateGradient: true,
+        highDpiSupport: true,    // High resolution support
+        staticLabels: {
+            font: "10px sans-serif",  // Specifies font
+            labels: [0, 90, 180, 270, 360, 450],  // Print labels at these values
+            color: "#000000",  // Optional: Label text color
+            fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+        },
     });
 
     function getNormalPressures(refrigerant, temp) {
@@ -249,10 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
         normalLowRangeEl.textContent = `${normalLow[0]} - ${normalLow[1]}`;
         normalHighRangeEl.textContent = `${normalHigh[0]} - ${normalHigh[1]}`;
 
-        pressureChart.data.datasets[0].data = [lowSide, highSide];
-        pressureChart.data.datasets[1].data = [normalLow[0], normalHigh[0]];
-        pressureChart.data.datasets[2].data = [normalLow[1], normalHigh[1]];
-        pressureChart.update();
+        // Update gauges with current values
+        lowSideGauge.set(lowSide);
+        highSideGauge.set(highSide);
+
+        // Add visual indicators for normal ranges
+        // This could be enhanced with more sophisticated visualization if needed
 
         // Define thresholds more generously to avoid "normal" if close to edge
         const lowThreshold = 5;
