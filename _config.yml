@@ -1,6 +1,6 @@
 title: Interactive AC Troubleshooting Guide
 description: An interactive tool to diagnose automotive AC issues based on gauge readings.
-baseurl: "alextheberge.github.io/interactiveACguide" # If hosted at the root of your GitHub Pages site (e.g., username.github.io/repository-name/), set this to "/repository-name"
+baseurl: "/interactiveACguide" # If hosted at the root of your GitHub Pages site (e.g., username.github.io/repository-name/), set this to "/repository-name"
 url: "alextheberge.github.io" # Your site's full URL (e.g., https://username.github.io)
 
 # Optional: Specify a theme or use `theme: null` if Tailwind handles everything.

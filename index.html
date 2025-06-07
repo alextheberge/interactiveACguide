@@ -1,0 +1,135 @@
+---
+layout: default
+title: Interactive AC Troubleshooting Guide
+description: Diagnose your car's AC issues with this interactive tool.
+---
+
+<div class="container mx-auto p-4 md:p-8">
+
+    <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Interactive Automotive AC Troubleshooting Guide</h1>
+        <p class="mt-2 text-lg text-slate-600">A step-by-step diagnostic tool based on your gauge readings.</p>
+    </header>
+
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded-md" role="alert">
+        <p class="font-bold">Safety First!</p>
+        <p>Working on AC systems is hazardous. Refrigerant can cause frostbite. Always wear safety goggles and gloves. Never vent refrigerant to the atmosphere. When in doubt, consult a professional.</p>
+    </div>
+
+    <main class="bg-white p-6 rounded-2xl shadow-lg">
+        <div id="diagnostic-tool">
+            <h2 class="text-2xl font-bold mb-4 text-slate-900 border-b pb-2">1. Diagnostic Dashboard</h2>
+            <p class="mb-6 text-slate-600">Enter your vehicle's information and AC gauge readings below. The tool will analyze the pressures and provide a diagnosis based on the ambient temperature.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div>
+                    <label for="refrigerant-type" class="block text-sm font-medium text-slate-700">Refrigerant Type</label>
+                    <select id="refrigerant-type" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="R-134a">R-134a</option>
+                        <option value="R-1234yf">R-1234yf</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ambient-temp" class="block text-sm font-medium text-slate-700">Ambient Temp (°F): <span id="ambient-temp-value" class="font-bold text-blue-600">75</span></label>
+                    <input type="range" id="ambient-temp" min="65" max="100" value="75" class="mt-2 w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div>
+                    <label for="low-side-pressure" class="block text-sm font-medium text-slate-700">Low Side (Blue) PSI: <span id="low-side-value" class="font-bold text-blue-600">40</span></label>
+                    <input type="range" id="low-side-pressure" min="0" max="100" value="40" class="mt-2 w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div>
+                    <label for="high-side-pressure" class="block text-sm font-medium text-slate-700">High Side (Red) PSI: <span id="high-side-value" class="font-bold text-blue-600">180</span></label>
+                    <input type="range" id="high-side-pressure" min="0" max="450" value="180" class="mt-2 w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div id="pressure-analysis" class="bg-slate-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-3 text-slate-800">Pressure Analysis</h3>
+                    <p class="mb-4 text-sm text-slate-600">This chart compares your readings to the expected normal range for the selected refrigerant and ambient temperature.</p>
+                    <div class="chart-container">
+                        <canvas id="pressure-chart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center text-sm font-medium">
+                        <p>Normal Low: <span id="normal-low-range" class="text-green-600 font-bold"></span> PSI</p>
+                        <p>Normal High: <span id="normal-high-range" class="text-green-600 font-bold"></span> PSI</p>
+                    </div>
+                </div>
+
+                <div id="diagnosis-output" class="bg-blue-50 p-6 rounded-lg min-h-[400px]">
+                    <h3 class="text-xl font-semibold mb-2 text-slate-800">2. Diagnosis & Next Steps</h3>
+                    <div id="diagnosis-content">
+                        <p class="text-slate-600">Adjust the sliders above to match your readings. Your diagnosis will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="mt-12">
+        <h2 class="text-2xl font-bold mb-4 text-center text-slate-900">Reference Information</h2>
+        <div class="bg-white p-6 rounded-2xl shadow-lg">
+            <div class="border-b border-slate-200">
+                <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                    <button class="tab-btn tab-active py-4 px-1 border-b-2 font-medium text-sm" data-tab="system-overview">System Overview</button>
+                    <button class="tab-btn text-slate-500 hover:text-slate-700 hover:border-slate-300 py-4 px-1 border-b-2 border-transparent font-medium text-sm" data-tab="component-deep-dive">Component Details</button>
+                    <button class="tab-btn text-slate-500 hover:text-slate-700 hover:border-slate-300 py-4 px-1 border-b-2 border-transparent font-medium text-sm" data-tab="pro-help">When to Call a Pro</button>
+                </nav>
+            </div>
+            <div class="pt-6">
+                <div id="system-overview" class="tab-content space-y-4">
+                    <h3 class="text-xl font-semibold">How Your Car's AC Works</h3>
+                    <p>Automotive AC cools your cabin by moving heat from inside to the outside air. This is a continuous cycle involving key components and the phase change of refrigerant from liquid to gas and back.</p>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <p class="font-semibold text-center text-slate-700">Simplified Refrigerant Flow Path</p>
+                        <div class="mt-2 flex flex-wrap justify-center items-center gap-2 text-sm text-center">
+                            <div class="p-2 bg-blue-100 rounded">Compressor</div>
+                            <span class="font-bold text-blue-500">&rarr;</span>
+                            <div class="p-2 bg-red-100 rounded">Condenser</div>
+                            <span class="font-bold text-red-500">&rarr;</span>
+                            <div class="p-2 bg-red-100 rounded">Receiver/Drier</div>
+                            <span class="font-bold text-red-500">&rarr;</span>
+                            <div class="p-2 bg-yellow-100 rounded">Expansion Valve / Orifice Tube</div>
+                            <span class="font-bold text-blue-500">&rarr;</span>
+                            <div class="p-2 bg-blue-100 rounded">Evaporator</div>
+                            <span class="font-bold text-blue-500">&rarr;</span>
+                            <div class="p-2 bg-blue-100 rounded">Accumulator</div>
+                            <span class="font-bold text-blue-500">&rarr;</span>
+                            <div class="p-2 bg-blue-100 rounded">Compressor</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="component-deep-dive" class="tab-content hidden space-y-4">
+                    <h3 class="text-xl font-semibold">Common Component Issues</h3>
+                    <p>Understanding the role of each part helps in diagnostics. A failure in one component can affect the entire system's pressures and performance.</p>
+                    <details class="bg-slate-50 p-3 rounded-lg cursor-pointer">
+                        <summary class="font-semibold">Compressor</summary>
+                        <p class="mt-2 text-sm text-slate-600">The "heart" of the system. Failures include bad clutches, internal wear, or leaks. Listen for grinding noises. A rapidly cycling clutch often indicates a low refrigerant charge.</p>
+                    </details>
+                    <details class="bg-slate-50 p-3 rounded-lg cursor-pointer">
+                        <summary class="font-semibold">Condenser</summary>
+                        <p class="mt-2 text-sm text-slate-600">Radiates heat from the refrigerant. Issues are usually blocked fins (debris) or a failing fan, leading to very high pressures. Check for physical damage from road debris.</p>
+                    </details>
+                    <details class="bg-slate-50 p-3 rounded-lg cursor-pointer">
+                        <summary class="font-semibold">Expansion Valve (TXV) / Orifice Tube (OT)</summary>
+                        <p class="mt-2 text-sm text-slate-600">Meters refrigerant into the evaporator. Can get stuck open (flooding the evaporator) or closed (starving it), causing distinct pressure imbalances.</p>
+                    </details>
+                    <details class="bg-slate-50 p-3 rounded-lg cursor-pointer">
+                        <summary class="font-semibold">Evaporator</summary>
+                        <p class="mt-2 text-sm text-slate-600">Absorbs heat from the cabin. Leaks are hard to see; check the condensate drain for dye. Icing can occur from low charge or a clogged cabin air filter, blocking airflow.</p>
+                    </details>
+                </div>
+                <div id="pro-help" class="tab-content hidden space-y-4">
+                    <h3 class="text-xl font-semibold">Knowing Your Limits</h3>
+                    <p>While this tool empowers diagnosis, some tasks require professional equipment and certification. Here’s when to call a certified technician:</p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><b>Refrigerant Recovery & Recharging:</b> If the system is overcharged or needs to be opened for repair, the refrigerant must be recovered legally. Recharging requires precise measurement by weight.</li>
+                        <li><b>Major Component Replacement:</b> Swapping a compressor or evaporator can be complex and requires specialized tools.</li>
+                        <li><b>System Flushing:</b> After a major failure (like a compressor grenading), the system must be flushed of debris to avoid damaging new parts.</li>
+                        <li><b>Complex Electrical Diagnostics:</b> Issues with control modules or sensor circuits often require advanced scan tools.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
